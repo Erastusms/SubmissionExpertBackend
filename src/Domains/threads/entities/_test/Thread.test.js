@@ -17,8 +17,7 @@ describe('a Thread entities', () => {
     // Arrange
     const payload = {
       title: 'Laskar Pelangi',
-      body: Infinity,
-      owner: 'James-123'
+      body: Infinity
     };
 
     // Action and Assert
@@ -31,8 +30,7 @@ describe('a Thread entities', () => {
     // Arrange
     const payload = {
       title: 'Those Magnificent Men in their Flying Machines Or, How I Flew from London to Paris in 25 Hours 11 Minutes',
-      body: 'This film is really good',
-      owner: 'James-123'
+      body: 'This film is really good'
     };
 
     // Action and Assert
@@ -45,8 +43,7 @@ describe('a Thread entities', () => {
     // Arrange
     const payload = {
       title: 'Galih * Ratna',
-      body: 'Not a good movie',
-      owner: 'James-123'
+      body: 'Not a good movie'
     };
 
     // Action and Assert
@@ -59,16 +56,14 @@ describe('a Thread entities', () => {
     // Arrange
     const payload = {
       title: 'Laskar pelangi',
-      body: 'Takkan terikat waktu',
-      owner: 'James-123'
+      body: 'Takkan terikat waktu'
     };
 
     // Action
-    const { title, body, owner } = new Thread(payload);
+    const { title, body } = new Thread(payload);
 
     // Assert
     expect(title).toEqual(payload.title);
     expect(body).toEqual(payload.body);
-    expect(owner).toEqual(payload.owner);
   });
 });
