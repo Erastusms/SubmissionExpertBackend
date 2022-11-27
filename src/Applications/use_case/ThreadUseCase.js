@@ -1,4 +1,5 @@
-const Thread = require('../../Domains/threads/entities/Thread');
+const AddThread = require('../../Domains/threads/entities/AddThread');
+// const GetDetailThread = require('../../Domains/threads/entities/AddThread');
 
 class ThreadUseCase {
   constructor({ threadRepository, authenticationTokenManager }) {
@@ -14,9 +15,18 @@ class ThreadUseCase {
     const { id: owner } = await this._authenticationTokenManager.decodePayload(
       accessToken
     );
-    const addThread = new Thread({ ...useCasePayload, owner });
+    const addThread = new AddThread({ ...useCasePayload, owner });
     return this._threadRepository.addThread(addThread);
   }
+
+//   async getDetailThread(threadId) {
+//     await GetDetailThread.verifyAccessToken(accessToken);
+//     const { id: owner } = await this._authenticationTokenManager.decodePayload(
+//       accessToken
+//     );
+//     const addThread = new Thread({ ...useCasePayload, owner });
+//     return this._threadRepository.addThread(addThread);
+//   }
 }
 
 module.exports = ThreadUseCase;

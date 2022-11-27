@@ -1,4 +1,4 @@
-const AddThread = require('../../../Domains/threads/entities/Thread');
+const AddThread = require('../../../Domains/threads/entities/AddThread');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const ThreadUseCase = require('../ThreadUseCase');
 const AuthenticationTokenManager = require('../../security/AuthenticationTokenManager');
