@@ -28,7 +28,7 @@ describe('a Thread entities', () => {
     );
   });
 
-  it('should get detail Thread Id correctly', () => {
+  it('should get Thread Id correctly', () => {
     const expectedThreadId = {
       threadId: 'thread-123',
     };
