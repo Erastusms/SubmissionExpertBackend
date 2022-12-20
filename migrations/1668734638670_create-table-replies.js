@@ -15,8 +15,8 @@ exports.up = (pgm) => {
       notNUll: true,
     },
     date: {
-      type: 'timestamp',
-      default: pgm.func('current_timestamp'),
+      type: 'TEXT',
+      notNull: true,
     },
     content: {
       type: 'VARCHAR(50)',
@@ -27,11 +27,20 @@ exports.up = (pgm) => {
       notNull: true,
       default: false,
     },
+    owner: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
   });
   pgm.addConstraint(
     'replies',
     'fk_replies.comment_id_comments.id',
-    'FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE',
+    'FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE'
+  );
+  pgm.addConstraint(
+    'replies',
+    'fk_replies.owner_users.id',
+    'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE'
   );
 };
 

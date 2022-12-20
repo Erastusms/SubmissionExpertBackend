@@ -7,7 +7,7 @@ exports.up = (pgm) => {
       primaryKey: true,
     },
     title: {
-      type: 'VARCHAR(50)',
+      type: 'TEXT',
       notNull: true,
     },
     body: {
@@ -19,8 +19,8 @@ exports.up = (pgm) => {
       notNUll: true,
     },
     date: {
-      type: 'timestamp',
-      default: pgm.func('current_timestamp'),
+      type: 'TEXT',
+      notNull: true,
     },
     is_deleted: {
       type: 'BOOLEAN',

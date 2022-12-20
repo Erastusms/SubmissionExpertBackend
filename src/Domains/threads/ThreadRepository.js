@@ -1,4 +1,4 @@
-class UserRepository {
+class ThreadRepository {
   async addThread(threadPayload) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
@@ -6,10 +6,6 @@ class UserRepository {
   async getDetailThread(threadId) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-
-  async removeThread(threadId) {
-    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-  }
 }
 
-module.exports = UserRepository;
+module.exports = ThreadRepository;
