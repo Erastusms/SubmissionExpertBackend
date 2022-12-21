@@ -198,11 +198,11 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
-        },
-        {
-          name: 'authenticationTokenManager',
-          internal: AuthenticationTokenManager.name,
-        },
+        }
+        // {
+        //   name: 'authenticationTokenManager',
+        //   internal: AuthenticationTokenManager.name,
+        // },
       ],
     },
   },

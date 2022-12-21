@@ -2,19 +2,26 @@ const AddThreadUseCase = require('../../../../Applications/use_case/AddThreadUse
 const GetDetailThreadUseCase = require('../../../../Applications/use_case/GetDetailThreadUseCase');
 
 class ThreadsHandler {
-  constructor(container) {
+  constructor(container, authenticationTokenManager) {
     this._container = container;
+    this._authenticationTokenManager = authenticationTokenManager;
 
     this.addThreadHandler = this.addThreadHandler.bind(this);
     this.getDetailThreadHandler = this.getDetailThreadHandler.bind(this);
   }
 
   async addThreadHandler(request, h) {
-    const headerAuthorization = request.headers.authorization;
+    const accessToken = await this._authenticationTokenManager.getBearerToken(
+      request.headers.authorization
+    );
+    await this._authenticationTokenManager.verifyAccessToken(accessToken);
+    const { id: owner } = await this._authenticationTokenManager.decodePayload(
+      accessToken
+    );
     const threadUseCase = this._container.getInstance(AddThreadUseCase.name);
     const addedThread = await threadUseCase.addNewThread(
       request.payload,
-      headerAuthorization
+      owner
     );
 
     const response = h.response({

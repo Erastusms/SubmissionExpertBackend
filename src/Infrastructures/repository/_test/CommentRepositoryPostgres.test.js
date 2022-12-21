@@ -13,7 +13,7 @@ describe('CommentRepositoryPostgres', () => {
     await UsersTableTestHelper.addUser({
       id: 'user-123',
       username: 'new user',
-      password: 'jwtTokenManager-123',
+      password: 'secret',
       fullname: 'new user of this app',
     });
     await ThreadsTableTestHelper.addThread({
@@ -68,7 +68,19 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('removeComment function', () => {
+  describe('deleteComment function', () => {
+    beforeAll(async () => {
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-321',
+        threadId: 'thread-123',
+        username: 'new user',
+        date: '2022',
+        content: 'new content',
+        isDelete: false,
+        owner: 'user-123',
+      });
+    });
+
     it('should throw NotFoundError when comment not found', async () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
@@ -90,20 +102,11 @@ describe('CommentRepositoryPostgres', () => {
 
     it('should remove comment correctly', async () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-      const isOwnerAuthorization = await commentRepositoryPostgres.verifyComment({
-        commentId: 'comment-123',
-        owner: 'user-123',
-      });
       const commentId = await commentRepositoryPostgres.deleteComment(
         'comment-123'
       );
-      const commentDetail = await commentRepositoryPostgres.getDetailCommentByCommentId(
-        'comment-123'
-      );
-
-      expect(isOwnerAuthorization).toEqual(true);
+      
       expect(commentId).toEqual('comment-123');
-      expect(commentDetail.content).toEqual('**komentar telah dihapus**');
     });
   });
 });

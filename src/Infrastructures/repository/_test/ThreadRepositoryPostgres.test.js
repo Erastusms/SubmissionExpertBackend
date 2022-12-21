@@ -12,7 +12,7 @@ describe('ThreadRepositoryPostgres', () => {
     await UsersTableTestHelper.addUser({
       id: 'user-123',
       username: 'new user',
-      password: 'jwtTokenManager-123',
+      password: 'secret',
       fullname: 'new user of this app',
     });
   });
@@ -59,6 +59,16 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('getDetailThread', () => {
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-321',
+        title: 'new title',
+        body: 'new body',
+        owner: 'user-123',
+        date: '2022',
+      });
+    });
+
     it('should throw NotFoundError when thread not found', async () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
@@ -70,37 +80,18 @@ describe('ThreadRepositoryPostgres', () => {
     it('should return detail thread correctly', async () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
       const detailThread = await threadRepositoryPostgres.getDetailThread(
-        'thread-123'
+        'thread-321'
       );
 
       expect(detailThread).toStrictEqual(
         new GetDetailThread({
-          id: 'thread-123',
-          title: 'title-1',
-          body: 'body-2',
+          id: 'thread-321',
+          title: 'new title',
+          body: 'new body',
           username: 'new user',
           date: '2022',
         })
       );
     });
   });
-
-  // describe('removeThread', () => {
-  //   it('should throw NotFoundError when thread not found', async () => {
-  //     const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
-
-  //     await expect(
-  //       threadRepositoryPostgres.removeThread('thread-999999')
-  //     ).rejects.toThrowError(NotFoundError);
-  //   });
-
-  //   it('should remove thread correctly', async () => {
-  //     const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
-  //     const threadId = await threadRepositoryPostgres.removeThread(
-  //       'thread-123'
-  //     );
-
-  //     expect(threadId).toStrictEqual('thread-123');
-  //   });
-  // });
 });
