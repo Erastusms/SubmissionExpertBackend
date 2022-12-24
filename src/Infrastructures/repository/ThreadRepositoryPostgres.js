@@ -11,7 +11,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async addThread(payload) {
-    const { title, body, owner, date = '2022' } = payload;
+    const { title, body, owner } = payload;
+    const date = new Date();
     const id = `thread-${this._idGenerator()}`;
 
     const query = {
@@ -33,24 +34,18 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) throw new NotFoundError('Thread');
-
     return new GetDetailThread({ ...result.rows[0] });
   }
 
-  // async removeThread(threadId) {
-  //   const query = {
-  //     text: 'DELETE FROM threads WHERE id = $1 RETURNING id',
-  //     values: [threadId],
-  //   };
+  async verifyThreadAvaibility(threadId) {
+    const query = {
+      text: 'SELECT * FROM threads where id = $1',
+      values: [threadId],
+    };
 
-  //   const result = await this._pool.query(query);
-  //   if (!result.rows.length) throw new NotFoundError('Thread');
-
-  //   const { id } = result.rows[0];
-
-  //   return id;
-  // }
+    const result = await this._pool.query(query);
+    if (!result.rows.length) throw new NotFoundError('Thread');
+  }
 }
 
 module.exports = ThreadRepositoryPostgres;

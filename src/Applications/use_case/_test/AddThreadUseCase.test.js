@@ -1,60 +1,43 @@
 const AddThread = require('../../../Domains/threads/entities/AddThread');
+const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const ThreadUseCase = require('../AddThreadUseCase');
-const AuthenticationTokenManager = require('../../security/AuthenticationTokenManager');
+const AddThreadUseCase = require('../AddThreadUseCase');
 
 describe('AddThreadUseCase', () => {
   it('should orchestrate the add thread action correctly', async () => {
+    const userId = 'user-123';
     const useCasePayload = {
       id: 'thread-123',
       title: 'Titanic',
-      body: 'Someday i will fly'
+      body: 'Someday i will fly',
     };
 
-    const expectedAddThread = new AddThread({
+    const expectedAddThread = new AddThread({ ...useCasePayload, owner: userId });
+    const expectedAddedThread = new AddedThread({
       ...useCasePayload,
-      owner: 'user-123'
+      owner: 'user-123',
     });
-
-    const headerAuthorization = 'Bearer accessToken';
-    const accessToken = 'accessToken';
 
     const mockThreadRepository = new ThreadRepository();
-    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
 
-    mockThreadRepository.addThread = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(expectedAddThread));
-
-    mockAuthenticationTokenManager.verifyAccessToken = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve());
-    mockAuthenticationTokenManager.getBearerToken = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(accessToken));
-    mockAuthenticationTokenManager.decodePayload = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve({ username: 'user-123', id: expectedAddThread.owner }));
-
-    const dummyThreadUseCase = new ThreadUseCase({
+    mockThreadRepository.addThread = jest.fn().mockImplementation(() => Promise.resolve(
+      new AddedThread({
+        id: 'thread-123',
+        title: 'Titanic',
+        owner: 'user-123',
+      })
+    ));
+    
+    const dummyThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
-      authenticationTokenManager: mockAuthenticationTokenManager,
     });
 
-    const addThread = await dummyThreadUseCase.addNewThread(
+    const addedThread = await dummyThreadUseCase.addNewThread(
       useCasePayload,
-      headerAuthorization
+      userId
     );
 
-    expect(addThread).toStrictEqual(expectedAddThread);
-    expect(mockAuthenticationTokenManager.getBearerToken).toBeCalledWith(
-      headerAuthorization
-    );
-    expect(
-      mockAuthenticationTokenManager.verifyAccessToken()
-    ).resolves.toBeUndefined();
-    expect(mockAuthenticationTokenManager.decodePayload).toBeCalledWith(
-      accessToken
-    );
+    expect(addedThread).toStrictEqual(expectedAddedThread);
+    expect(mockThreadRepository.addThread).toBeCalledWith(expectedAddThread);
   });
 });

@@ -34,20 +34,18 @@ describe('CommentRepositoryPostgres', () => {
 
   describe('addComment function', () => {
     it('should persist add comment and return comment correctly', async () => {
-      const addComment = new AddComment({
-        content: 'content-1',
-      });
-      const addedCommentExpected = {
-        ...addComment,
-        id: 'comment-123',
-        owner: 'user-123',
-      };
-
-      const addCommentPayload = {
-        ...addedCommentExpected,
+      const addCommentPayload = new AddComment({
+        content: 'content-test',
         username: 'new user',
         threadId: 'thread-123',
-      };
+        owner: 'user-123',
+      });
+
+      const expectedAddedComment = new AddedComment({
+        id: 'comment-123',
+        content: 'content-test',
+        owner: 'user-123',
+      });
 
       const fakeIdGenerator = () => '123'; // stub!
       const commentRepositoryPostgres = new CommentRepositoryPostgres(
@@ -58,13 +56,7 @@ describe('CommentRepositoryPostgres', () => {
         addCommentPayload
       );
 
-      expect(addedComment).toStrictEqual(
-        new AddedComment({
-          id: 'comment-123',
-          content: 'content-1',
-          owner: 'user-123',
-        })
-      );
+      expect(addedComment).toStrictEqual(expectedAddedComment);
     });
   });
 
@@ -105,7 +97,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentId = await commentRepositoryPostgres.deleteComment(
         'comment-123'
       );
-      
+
       expect(commentId).toEqual('comment-123');
     });
   });

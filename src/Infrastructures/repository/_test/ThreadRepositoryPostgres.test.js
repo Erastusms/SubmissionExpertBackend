@@ -73,7 +73,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       await expect(
-        threadRepositoryPostgres.getDetailThread('thread-999999')
+        threadRepositoryPostgres.verifyThreadAvaibility('thread-999999')
       ).rejects.toThrowError(NotFoundError);
     });
 

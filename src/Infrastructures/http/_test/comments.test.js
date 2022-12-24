@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const pool = require('../../database/postgres/pool');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
@@ -141,7 +140,6 @@ describe('/threads/{threadId}/comments endpoint', () => {
 
     it('should respond with 200 and return success status', async () => {
       const server = await createServer(container);
-
       const response = await server.inject({
         method: 'DELETE',
         url: `/threads/${threadId}/comments/${commentId}`,

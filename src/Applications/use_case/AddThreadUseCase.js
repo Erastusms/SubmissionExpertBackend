@@ -4,7 +4,6 @@ class AddThreadUseCase {
   constructor({ threadRepository, commentRepository }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
-    // this._authenticationTokenManager = authenticationTokenManager;
   }
 
   async addNewThread(useCasePayload, owner) {
