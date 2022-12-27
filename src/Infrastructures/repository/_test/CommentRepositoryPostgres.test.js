@@ -2,8 +2,6 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const pool = require('../../database/postgres/pool');
-const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
@@ -56,6 +54,10 @@ describe('CommentRepositoryPostgres', () => {
         addCommentPayload
       );
 
+      const comment = await CommentsTableTestHelper.getDetailComment(
+        'comment-123'
+      );
+      expect(comment).toBeDefined();
       expect(addedComment).toStrictEqual(expectedAddedComment);
     });
   });
@@ -78,7 +80,7 @@ describe('CommentRepositoryPostgres', () => {
 
       await expect(
         commentRepositoryPostgres.findCommentById('comment-999999')
-      ).rejects.toThrowError(NotFoundError);
+      ).rejects.toThrowError('Comment Not Found');
     });
 
     it('should throw AuthorizationError when owner not authorization', async () => {
@@ -89,16 +91,21 @@ describe('CommentRepositoryPostgres', () => {
           commentId: 'comment-123',
           owner: 'user-321',
         })
-      ).rejects.toThrowError(AuthorizationError);
+      ).rejects.toThrowError('Anda tidak berhak mengakses Comment ini');
     });
 
     it('should remove comment correctly', async () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-      const commentId = await commentRepositoryPostgres.deleteComment(
-        'comment-123'
+      const comment = await commentRepositoryPostgres.deleteComment(
+        'comment-321'
       );
 
-      expect(commentId).toEqual('comment-123');
+      const commentDetail = await CommentsTableTestHelper.getDetailComment(
+        'comment-321'
+      );
+
+      expect(comment.id).toEqual('comment-321');
+      expect(commentDetail.is_deleted).toEqual(true);
     });
   });
 });

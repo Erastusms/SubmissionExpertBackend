@@ -27,16 +27,6 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new AddedComment(result.rows[0]);
   }
 
-  async getDetailCommentByCommentId(commentId) {
-    const query = {
-      text: 'SELECT * FROM comments WHERE id = $1',
-      values: [commentId],
-    };
-
-    const result = await this._pool.query(query);
-    return new GetDetailComment({ ...result.rows[0] });
-  }
-
   async getDetailComment(threadId) {
     const query = {
       text: `SELECT c.id, c.content, c.date, u.username,
@@ -48,7 +38,10 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
     return result.rows.map(
       (detail) => new GetDetailComment({
-        ...detail,
+        id: detail.id,
+        date: detail.date,
+        username: detail.username,
+        content: detail.is_deleted ? '**komentar telah dihapus**' : detail.content
       })
     );
   }
@@ -76,14 +69,14 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async deleteComment(commentId) {
     const query = {
-      text: 'UPDATE comments SET is_deleted = true, content = $1 WHERE id = $2 RETURNING id',
-      values: ['**komentar telah dihapus**', commentId],
+      text: 'UPDATE comments SET is_deleted = true WHERE id = $1 RETURNING id',
+      values: [commentId],
     };
 
     const result = await this._pool.query(query);
     const { id } = result.rows[0];
 
-    return id;
+    return { id };
   }
 }
 

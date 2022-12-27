@@ -19,6 +19,7 @@ class GetDetailComment {
 
     if (
       typeof id !== 'string'
+      || typeof date !== 'string'
       || typeof username !== 'string'
       || typeof content !== 'string'
     ) {
