@@ -4,8 +4,6 @@ const GetDetailThreadUseCase = require('../../../../Applications/use_case/GetDet
 class ThreadsHandler {
   constructor(container) {
     this._container = container;
-    // this._authenticationTokenManager = authenticationTokenManager;
-
     this.addThreadHandler = this.addThreadHandler.bind(this);
     this.getDetailThreadHandler = this.getDetailThreadHandler.bind(this);
   }

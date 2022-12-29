@@ -27,25 +27,6 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new AddedComment(result.rows[0]);
   }
 
-  async getDetailComment(threadId) {
-    const query = {
-      text: `SELECT c.id, c.content, c.date, u.username,
-              c.is_deleted FROM comments c INNER JOIN users u
-              ON c.owner = u.id WHERE c.thread_id = $1
-              ORDER BY c.date ASC`,
-      values: [threadId],
-    };
-    const result = await this._pool.query(query);
-    return result.rows.map(
-      (detail) => new GetDetailComment({
-        id: detail.id,
-        date: detail.date,
-        username: detail.username,
-        content: detail.is_deleted ? '**komentar telah dihapus**' : detail.content
-      })
-    );
-  }
-
   async findCommentById(commentId) {
     const query = {
       text: 'SELECT * FROM comments WHERE id = $1',
@@ -65,6 +46,27 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
     if (isEmpty(result.rows)) throw new AuthorizationError('Comment');
     return true;
+  }
+
+  async getDetailComment(commentId) {
+    const query = {
+      text: 'SELECT * from comments where id = $1',
+      values: [commentId],
+    };
+    const result = await this._pool.query(query);
+    return new GetDetailComment({ ...result.rows[0] });
+  }
+
+  async getAllCommentInThread(threadId) {
+    const query = {
+      text: `SELECT c.id, c.content, c.date, u.username,
+              c.is_deleted FROM comments c INNER JOIN users u
+              ON c.owner = u.id WHERE c.thread_id = $1
+              ORDER BY c.date ASC`,
+      values: [threadId],
+    };
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 
   async deleteComment(commentId) {

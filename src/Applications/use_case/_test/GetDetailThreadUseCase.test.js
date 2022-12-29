@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const GetDetailThread = require('../../../Domains/threads/entities/GetDetailThread');
 const GetDetailComment = require('../../../Domains/comments/entities/GetDetailComment');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
@@ -10,7 +11,7 @@ describe('GetDetailUseCase', () => {
       threadId: 'thread-123',
     };
 
-    const expectedDetailThread = {
+    const expectedDetailThread = new GetDetailThread({
       id: 'thread-123',
       title: 'New Title',
       body: 'New Body',
@@ -25,12 +26,12 @@ describe('GetDetailUseCase', () => {
         }),
         new GetDetailComment({
           id: 'thread-123',
-          content: 'content-1',
+          content: '**komentar telah dihapus**',
           date: '2022-11-12',
           username: 'User New',
         }),
       ],
-    };
+    });
 
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
@@ -43,22 +44,27 @@ describe('GetDetailUseCase', () => {
         body: 'New Body',
         date: '2022-11-11',
         username: 'New User',
+        comments: [],
       })
     ));
-    mockCommentRepository.getDetailComment = jest.fn().mockImplementation(() => Promise.resolve([
-      new GetDetailComment({
-        id: 'thread-123',
-        content: 'content-test',
-        date: '2022-11-11',
-        username: 'New User',
-      }),
-      new GetDetailComment({
-        id: 'thread-123',
-        content: 'content-1',
-        date: '2022-11-12',
-        username: 'User New',
-      }),
-    ]));
+    mockCommentRepository.getAllCommentInThread = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve([
+        {
+          id: 'thread-123',
+          content: 'content-test',
+          date: '2022-11-11',
+          username: 'New User',
+          is_deleted: false,
+        },
+        {
+          id: 'thread-123',
+          content: 'content-1',
+          date: '2022-11-12',
+          username: 'User New',
+          is_deleted: true,
+        },
+      ]));
 
     const dummyThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -75,7 +81,7 @@ describe('GetDetailUseCase', () => {
     expect(mockThreadRepository.getDetailThread).toBeCalledWith(
       payloadParams.threadId
     );
-    expect(mockCommentRepository.getDetailComment).toBeCalledWith(
+    expect(mockCommentRepository.getAllCommentInThread).toBeCalledWith(
       payloadParams.threadId
     );
     expect(detailThread).toStrictEqual(expectedDetailThread);
