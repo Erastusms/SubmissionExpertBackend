@@ -80,7 +80,15 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.cleanTable();
     });
 
-    it('should throw `Comment Not Found` when comment not found', async () => {
+    it('should resolve if comment exists', async () => {
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      await expect(
+        commentRepositoryPostgres.findCommentById('comment-321')
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw NotFoundError when comment not found', async () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       await expect(
@@ -112,7 +120,7 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.cleanTable();
     });
 
-    it('should throw `Anda tidak berhak mengakses Comment ini` when comment not authorized', async () => {
+    it('should throw AuthorizationError when comment not authorized', async () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
       const isCommentAuthorized = commentRepositoryPostgres.verifyComment({
         commentId: 'comment-444',
@@ -168,7 +176,8 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('getAllCommentInThread function', () => {
-    beforeEach(async () => {
+    it('should return all comment in thread correctly', async () => {
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
       await CommentsTableTestHelper.addComment({
         id: 'comment-777',
         threadId: 'thread-123',
@@ -178,20 +187,62 @@ describe('CommentRepositoryPostgres', () => {
         isDelete: false,
         owner: 'user-123',
       });
-    });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-888',
+        threadId: 'thread-123',
+        username: 'new user',
+        date: '2022',
+        content: 'new content super',
+        isDelete: false,
+        owner: 'user-123',
+      });
 
-    afterEach(async () => {
-      await CommentsTableTestHelper.cleanTable();
-    });
-
-    it('should return all comment in thread correctly', async () => {
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-      const detailComment = await commentRepositoryPostgres.getAllCommentInThread(
-        'thread-123'
-      );
+      const expectedDetailComment = [
+        {
+          id: 'comment-777',
+          username: 'new user',
+          date: '2022',
+          content: 'new content',
+          isDelete: false,
+        },
+        {
+          id: 'comment-888',
+          username: 'new user',
+          date: '2022',
+          content: 'new content super',
+          isDelete: false,
+        },
+      ];
+      const detailComment = await commentRepositoryPostgres.getAllCommentInThread('thread-123');
 
       expect(detailComment).toBeDefined();
-      expect(detailComment).toHaveLength(1);
+      expect(detailComment).toHaveLength(2);
+      expect(detailComment[0].id).toStrictEqual(expectedDetailComment[0].id);
+      expect(detailComment[0].username).toStrictEqual(
+        expectedDetailComment[0].username
+      );
+      expect(detailComment[0].date).toStrictEqual(
+        expectedDetailComment[0].date
+      );
+      expect(detailComment[0].content).toStrictEqual(
+        expectedDetailComment[0].content
+      );
+      expect(detailComment[0].is_deleted).toStrictEqual(
+        expectedDetailComment[0].isDelete
+      );
+      expect(detailComment[1].id).toStrictEqual(expectedDetailComment[1].id);
+      expect(detailComment[1].username).toStrictEqual(
+        expectedDetailComment[1].username
+      );
+      expect(detailComment[1].date).toStrictEqual(
+        expectedDetailComment[1].date
+      );
+      expect(detailComment[1].content).toStrictEqual(
+        expectedDetailComment[1].content
+      );
+      expect(detailComment[1].is_deleted).toStrictEqual(
+        expectedDetailComment[1].isDelete
+      );
     });
   });
 

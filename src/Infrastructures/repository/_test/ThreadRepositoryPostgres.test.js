@@ -106,7 +106,15 @@ describe('ThreadRepositoryPostgres', () => {
       await ThreadsTableTestHelper.cleanTable();
     });
 
-    it('should throw `Thread Not Found` when thread not found', async () => {
+    it('should resolve if thread exists', async () => {
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      await expect(
+        threadRepositoryPostgres.verifyThreadAvaibility('thread-321')
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw NotFoundError when thread not found', async () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       await expect(
