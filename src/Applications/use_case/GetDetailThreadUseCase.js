@@ -14,14 +14,15 @@ class GetDetailThreadUseCase {
     const commentDetail = await this._commentRepository.getAllCommentInThread(
       threadId
     );
-    const thread = new GetDetailThread({
+    return new GetDetailThread({
       ...threadDetail,
-      comments: commentDetail.map((comment) => new GetDetailComment({
-        ...comment,
-        content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
-      })),
+      comments: commentDetail.map(
+        (comment) => new GetDetailComment({
+          ...comment,
+          content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
+        })
+      ),
     });
-    return thread;
   }
 }
 
