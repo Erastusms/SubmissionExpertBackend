@@ -99,6 +99,12 @@ describe('CommentRepositoryPostgres', () => {
 
   describe('verifyComment function', () => {
     beforeAll(async () => {
+      await UsersTableTestHelper.addUser({
+        id: 'user-321',
+        username: 'new user super',
+        password: 'secret',
+        fullname: 'super this app',
+      });
       await CommentsTableTestHelper.addComment({
         id: 'comment-444',
         threadId: 'thread-123',
@@ -106,13 +112,7 @@ describe('CommentRepositoryPostgres', () => {
         date: '2022',
         content: 'new content',
         isDelete: false,
-        owner: 'user-123',
-      });
-      await UsersTableTestHelper.addUser({
-        id: 'user-321',
-        username: 'new user super',
-        password: 'secret',
-        fullname: 'super this app',
+        owner: 'user-321',
       });
     });
 
@@ -124,7 +124,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
       const isCommentAuthorized = commentRepositoryPostgres.verifyComment({
         commentId: 'comment-444',
-        owner: 'user-321',
+        owner: 'user-123',
       });
       expect(isCommentAuthorized).rejects.toThrowError(
         'Anda tidak berhak mengakses Comment ini'
@@ -135,7 +135,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
       const isCommentAuthorized = commentRepositoryPostgres.verifyComment({
         commentId: 'comment-444',
-        owner: 'user-123',
+        owner: 'user-321',
       });
       expect(isCommentAuthorized).resolves.toEqual(true);
     });
