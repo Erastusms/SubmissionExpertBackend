@@ -4,8 +4,6 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 const LikesTableTestHelper = require('../../../../tests/LikesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const AddLike = require('../../../Domains/likes/entities/AddLike');
-const AddedComment = require('../../../Domains/comments/entities/AddedComment');
-const GetDetailComment = require('../../../Domains/comments/entities/GetDetailComment');
 const LikeRepositoryPostgres = require('../LikeRepositoryPostgres');
 
 describe('LikeRepositoryPostgres', () => {
