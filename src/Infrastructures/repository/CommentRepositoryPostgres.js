@@ -2,7 +2,6 @@ const { isEmpty } = require('lodash');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
-const GetDetailComment = require('../../Domains/comments/entities/GetDetailComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 
 class CommentRepositoryPostgres extends CommentRepository {
@@ -46,15 +45,6 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
     if (isEmpty(result.rows)) throw new AuthorizationError('Comment');
     return true;
-  }
-
-  async getDetailComment(commentId) {
-    const query = {
-      text: 'SELECT * from comments where id = $1',
-      values: [commentId],
-    };
-    const result = await this._pool.query(query);
-    return new GetDetailComment({ ...result.rows[0] });
   }
 
   async getAllCommentInThread(threadId) {

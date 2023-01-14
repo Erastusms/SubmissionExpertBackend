@@ -4,11 +4,10 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 const pool = require('../../database/postgres/pool');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
-const GetDetailComment = require('../../../Domains/comments/entities/GetDetailComment');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 
 describe('CommentRepositoryPostgres', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await UsersTableTestHelper.addUser({
       id: 'user-123',
       username: 'new user',
@@ -24,10 +23,13 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
+  });
+
+  afterAll(async () => {
     await pool.end();
   });
 
@@ -98,7 +100,7 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('verifyComment function', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       await UsersTableTestHelper.addUser({
         id: 'user-321',
         username: 'new user super',
@@ -116,7 +118,8 @@ describe('CommentRepositoryPostgres', () => {
       });
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
+      await UsersTableTestHelper.cleanTable();
       await CommentsTableTestHelper.cleanTable();
     });
 
@@ -138,40 +141,6 @@ describe('CommentRepositoryPostgres', () => {
         owner: 'user-321',
       });
       expect(isCommentAuthorized).resolves.toEqual(true);
-    });
-  });
-
-  describe('getDetailComment function', () => {
-    beforeEach(async () => {
-      await CommentsTableTestHelper.addComment({
-        id: 'comment-777',
-        threadId: 'thread-123',
-        username: 'new user',
-        date: '2022',
-        content: 'new content',
-        isDelete: false,
-        owner: 'user-123',
-      });
-    });
-
-    afterEach(async () => {
-      await CommentsTableTestHelper.cleanTable();
-    });
-
-    it('should return detail comment correctly', async () => {
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-      const detailComment = await commentRepositoryPostgres.getDetailComment(
-        'comment-777'
-      );
-
-      expect(detailComment).toStrictEqual(
-        new GetDetailComment({
-          id: 'comment-777',
-          date: '2022',
-          username: 'new user',
-          content: 'new content',
-        })
-      );
     });
   });
 
