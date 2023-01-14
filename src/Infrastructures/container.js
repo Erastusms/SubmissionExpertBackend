@@ -15,6 +15,8 @@ const ThreadRepository = require('../Domains/threads/ThreadRepository');
 const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
 const CommentRepository = require('../Domains/comments/CommentRepository');
 const CommentRepositoryPostgres = require('./repository/CommentRepositoryPostgres');
+const LikeRepository = require('../Domains/likes/LikeRepository');
+const LikeRepositoryPostgres = require('./repository/LikeRepositoryPostgres');
 
 const PasswordHash = require('../Applications/security/PasswordHash');
 const BcryptPasswordHash = require('./security/BcryptPasswordHash');
@@ -32,6 +34,7 @@ const AddThreadUseCase = require('../Applications/use_case/AddThreadUseCase');
 const GetDetailThreadUseCase = require('../Applications/use_case/GetDetailThreadUseCase');
 const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/DeleteCommentUseCase');
+const AddLikeOrUnlikeUseCase = require('../Applications/use_case/AddLikeOrUnlikeUseCase');
 
 // creating container
 const container = createContainer();
@@ -102,6 +105,20 @@ container.register([
   {
     key: CommentRepository.name,
     Class: CommentRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeRepository.name,
+    Class: LikeRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -216,6 +233,10 @@ container.register([
           name: 'commentRepository',
           internal: CommentRepository.name,
         },
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
+        }
       ],
     },
   },
@@ -232,11 +253,7 @@ container.register([
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
-        },
-        {
-          name: 'authenticationTokenManager',
-          internal: AuthenticationTokenManager.name,
-        },
+        }
       ],
     },
   },
@@ -253,11 +270,28 @@ container.register([
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
+        }
+      ],
+    },
+  },
+  {
+    key: AddLikeOrUnlikeUseCase.name,
+    Class: AddLikeOrUnlikeUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
         },
         {
-          name: 'authenticationTokenManager',
-          internal: AuthenticationTokenManager.name,
+          name: 'commentRepository',
+          internal: CommentRepository.name,
         },
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
+        }
       ],
     },
   },
