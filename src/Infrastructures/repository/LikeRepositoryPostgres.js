@@ -1,8 +1,4 @@
 const { isEmpty } = require('lodash');
-const NotFoundError = require('../../Commons/exceptions/NotFoundError');
-const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
-const AddedComment = require('../../Domains/comments/entities/AddedComment');
-const GetDetailComment = require('../../Domains/comments/entities/GetDetailComment');
 const LikeRepository = require('../../Domains/likes/LikeRepository');
 
 class LikeRepositoryPostgres extends LikeRepository {
