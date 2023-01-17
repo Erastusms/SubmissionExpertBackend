@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const AddComment = require('../../Domains/comments/entities/AddComment');
 
 class AddCommentUseCase {

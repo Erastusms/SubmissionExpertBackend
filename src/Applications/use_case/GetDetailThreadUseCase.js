@@ -13,26 +13,13 @@ class GetDetailThreadUseCase {
     const { threadId } = payload;
     await this._threadRepository.verifyThreadAvaibility(threadId);
     const threadDetail = await this._threadRepository.getDetailThread(threadId);
-    const commentDetail = await this._commentRepository.getAllCommentInThread(
-      threadId
-    );
-    return new GetDetailThread({
-      ...threadDetail,
-      comments: await Promise.all(
-        commentDetail.map(async (comment) => {
-          const totalLikes = await this._likeRepository.getTotalLikesInComment(
-            comment.id
-          );
-          return new GetDetailComment({
-            ...comment,
-            content: comment.is_deleted
-              ? '**komentar telah dihapus**'
-              : comment.content,
-            likeCount: totalLikes.length,
-          });
-        })
-      ),
-    });
+    const commentDetail = await this._commentRepository.getAllCommentInThread(threadId);
+    threadDetail.comments = await Promise.all(commentDetail.map(async (comment) => {
+      const totalLikes = await this._likeRepository.getTotalLikesInComment(comment.id);
+      return new GetDetailComment({ ...comment, likeCount: totalLikes.length });
+    }));
+
+    return threadDetail;
   }
 }
 

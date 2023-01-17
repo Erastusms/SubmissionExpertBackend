@@ -44,7 +44,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
     if (isEmpty(result.rows)) throw new AuthorizationError('Comment');
-    return true;
+    // return true;
   }
 
   async getAllCommentInThread(threadId) {

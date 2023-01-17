@@ -1,4 +1,3 @@
-const { isEmpty } = require('lodash');
 const LikeRepository = require('../../Domains/likes/LikeRepository');
 
 class LikeRepositoryPostgres extends LikeRepository {
@@ -16,8 +15,10 @@ class LikeRepositoryPostgres extends LikeRepository {
     };
 
     const result = await this._pool.query(query);
-    if (isEmpty(result.rows[0])) return false;
-    return true;
+    // if (isEmpty(result.rows[0])) return false;
+    // return true;
+    // cara singkat boolean
+    return !!result.rows[0];
   }
 
   async likeComment(payload) {

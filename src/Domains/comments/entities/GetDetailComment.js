@@ -1,14 +1,16 @@
+/* eslint-disable camelcase */
 /* eslint-disable object-curly-newline */
 class GetDetailComment {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    const { id, date, username, content, likeCount } = payload;
+    const { id, date, username, content, is_deleted, likeCount } = payload;
 
     this.id = id;
     this.date = date;
     this.username = username;
-    this.content = content;
+    // this.content = content;
+    this.content = is_deleted ? '**komentar telah dihapus**' : content;
     this.likeCount = likeCount;
   }
 

@@ -88,6 +88,9 @@ describe('CommentRepositoryPostgres', () => {
       await expect(
         commentRepositoryPostgres.findCommentById('comment-321')
       ).resolves.toBeUndefined();
+      await expect(
+        commentRepositoryPostgres.findCommentById('comment-321')
+      ).resolves.not.toThrowError();
     });
 
     it('should throw NotFoundError when comment not found', async () => {
@@ -140,7 +143,7 @@ describe('CommentRepositoryPostgres', () => {
         commentId: 'comment-444',
         owner: 'user-321',
       });
-      expect(isCommentAuthorized).resolves.toEqual(true);
+      expect(isCommentAuthorized).resolves.not.toThrowError();
     });
   });
 
@@ -172,19 +175,19 @@ describe('CommentRepositoryPostgres', () => {
           username: 'new user',
           date: '2022',
           content: 'new content',
-          isDelete: false,
+          is_deleted: false,
         },
         {
           id: 'comment-888',
           username: 'new user',
           date: '2022',
           content: 'new content super',
-          isDelete: false,
+          is_deleted: false,
         },
       ];
       const detailComment = await commentRepositoryPostgres.getAllCommentInThread('thread-123');
 
-      expect(detailComment).toBeDefined();
+      expect(detailComment).toStrictEqual(expectedDetailComment);
       expect(detailComment).toHaveLength(2);
       expect(detailComment[0].id).toStrictEqual(expectedDetailComment[0].id);
       expect(detailComment[0].username).toStrictEqual(
@@ -197,7 +200,7 @@ describe('CommentRepositoryPostgres', () => {
         expectedDetailComment[0].content
       );
       expect(detailComment[0].is_deleted).toStrictEqual(
-        expectedDetailComment[0].isDelete
+        expectedDetailComment[0].is_deleted
       );
       expect(detailComment[1].id).toStrictEqual(expectedDetailComment[1].id);
       expect(detailComment[1].username).toStrictEqual(
@@ -210,7 +213,7 @@ describe('CommentRepositoryPostgres', () => {
         expectedDetailComment[1].content
       );
       expect(detailComment[1].is_deleted).toStrictEqual(
-        expectedDetailComment[1].isDelete
+        expectedDetailComment[1].is_deleted
       );
     });
   });
